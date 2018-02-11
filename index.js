@@ -23,11 +23,9 @@ function useEmojiData(json) {
   window.keywordToEmojiMap = {}
 
   for(var key in json) {
-
     if(json[key]['category'] === '_custom') continue
 
     var keywords = [key].concat(json[key].keywords)
-
     addEmojiToKeywordsMap(json[key]['char'], keywords)
 
     if(json[key]['fitzpatrick_scale']) {
@@ -124,11 +122,10 @@ megamoji.addEventListener('click', function() {
   fillTextarea(JSON.stringify({'megamoji_name': result}, null, '  '))
 })
 
-// Close the dropdown if the user clicks outside of it
+// Close the emoji picker if you click anywhere outside of it
 window.addEventListener('click',  function(event) {
   if (event.target.classList.contains('picker-item')) {
     window.__showingPickerFor.value = event.target.textContent
-
     if (window.__showingPickerFor.id === 'bg') {
       changeGrid()
     }
@@ -138,7 +135,7 @@ window.addEventListener('click',  function(event) {
     emoji.hidden = true
     window__showingPickerFor = null
   }
-}, true)
+})
 
 function fillTextarea(result) {
   textarea.hidden = false
