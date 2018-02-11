@@ -18,14 +18,18 @@ var containerWidthInEm = 30 // .measure
 fetch('./node_modules/emojilib/emojis.json').then(function(res) {
   return res.json()
 }).then(useEmojiData)
-
 function useEmojiData(json) {
   emojiData = json
-  var emojiDataList = document.querySelector('#emoji')
+  window.keywordToEmojiMap = {}
 
   for(var key in json) {
+
     if(json[key]['category'] === '_custom') continue
-    emojiDataList.insertAdjacentHTML('beforeend', `<option value="${json[key]['char']}"}">${key}</option>`)
+
+    var keywords = [key].concat(json[key].keywords)
+
+    addEmojiToKeywordsMap(json[key]['char'], keywords)
+
     if(json[key]['fitzpatrick_scale']) {
       // Okay, so here's a thing. Emoji math is weird:
       // For plain skintone emoji like 🙌, 🙌 + 🏻 always equals 🙌🏻
@@ -36,11 +40,11 @@ function useEmojiData(json) {
 
       // Add a placeholder for where the skintone goes. Yeah, it seems to go
       // here and yeah, it might break in the future.
-      blownUp.splice(1, 0, '');
+      blownUp.splice(1, 0, '')
       for(const skintone of ["🏻", "🏼", "🏽", "🏾", "🏿"]) {
         blownUp[1] = skintone
         const withSkintone = blownUp.join('')
-        emojiDataList.insertAdjacentHTML('beforeend', `<option value="${withSkintone}">${key}</option>`)
+        addEmojiToKeywordsMap(withSkintone, keywords)
       }
     }
   }
@@ -49,7 +53,9 @@ function useEmojiData(json) {
 trace.addEventListener('change', setTraceBackground)
 cols.addEventListener('change', changeGrid)
 rows.addEventListener('change', changeGrid)
-bg.addEventListener('change', changeGrid)
+paint.addEventListener('input', showEmojiPicker)
+bg.addEventListener('input', showEmojiPicker)
+
 nativeButton.addEventListener('change', function() {
   // Undo all the twemojifying.
   var els = grid.querySelectorAll('.target')
@@ -118,6 +124,22 @@ megamoji.addEventListener('click', function() {
   fillTextarea(JSON.stringify({'megamoji_name': result}, null, '  '))
 })
 
+// Close the dropdown if the user clicks outside of it
+window.addEventListener('click',  function(event) {
+  if (event.target.classList.contains('picker-item')) {
+    window.__showingPickerFor.value = event.target.textContent
+
+    if (window.__showingPickerFor.id === 'bg') {
+      changeGrid()
+    }
+    emoji.hidden = true
+    window__showingPickerFor = null
+  } else {
+    emoji.hidden = true
+    window__showingPickerFor = null
+  }
+}, true)
+
 function fillTextarea(result) {
   textarea.hidden = false
   textarea.value = result
@@ -146,6 +168,62 @@ function changeGrid() {
     }
   }
   grid.innerHTML = html
+}
+
+function addEmojiToKeywordsMap(emoji, list) {
+  for (var i = 0; i < list.length; i++) {
+    var entry = keywordToEmojiMap[list[i]] || []
+    entry.push(emoji)
+    keywordToEmojiMap[list[i]] = entry
+  }
+}
+
+function filterByKeyword(keyword) {
+  var results = []
+  var html = ''
+  for (var key in window.keywordToEmojiMap) {
+    if (key.indexOf(keyword) !== -1) {
+      // Don't add duplicates
+      var list = window.keywordToEmojiMap[key]
+      for (var i = 0; i < list.length; i++) {
+        if (results.indexOf(list[i]) === -1) {
+          results.push(list[i])
+          html += `<button class="picker-item dib flex-auto relative pa1 bn bg-transparent">${window.keywordToEmojiMap[key][i]}</button>`
+        }
+      }
+    }
+  }
+  return html
+}
+
+// BTW: In this method, `this` is the input
+function showEmojiPicker() {
+  // If this is an emoji (the user just inserted it), we don't need
+  // to deal with the picker
+  if (this.value !== '' && this.value !== twemoji.parse(this.value)) {
+    if (this.id === 'bg') {
+      changeGrid()
+    }
+    return
+  }
+
+  if (this.value.length < 3) {
+    emoji.innerHTML = ''
+    emoji.hidden = true
+  } else {
+    emoji.innerHTML = filterByKeyword(this.value)
+
+    // We don't need to recompute the position if we're already open
+    if (emoji.hidden || window__showingPickerFor === this || emoji.innerHTML !== '') {
+      window.__showingPickerFor = this
+      emoji.hidden = false
+      var rekt = this.getBoundingClientRect()
+      var parentRekt = this.offsetParent.getBoundingClientRect()
+      emoji.style.width = rekt.width + 'px'
+      emoji.style.top = rekt.top - parentRekt.top + rekt.height + 'px'
+      emoji.style.left = rekt.left - parentRekt.left + 'px'
+    }
+  }
 }
 
 changeGrid()
