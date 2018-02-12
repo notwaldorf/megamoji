@@ -169,9 +169,9 @@ function changeGrid() {
 
 function addEmojiToKeywordsMap(emoji, list) {
   for (var i = 0; i < list.length; i++) {
-    var entry = keywordToEmojiMap[list[i]] || []
+    var entry = window.keywordToEmojiMap[list[i]] || []
     entry.push(emoji)
-    keywordToEmojiMap[list[i]] = entry
+    window.keywordToEmojiMap[list[i]] = entry
   }
 }
 
