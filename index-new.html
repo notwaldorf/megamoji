@@ -18,7 +18,7 @@
     <meta content="https://f.cloud.github.com/assets/1153134/1773595/df14deb8-67eb-11e3-8197-f7978d514309.png" property="og:image" />
     <meta content="http://megamoji.muan.co" property="og:url" />
     <meta content="Creating bigger, prettier, more exciting emoji." property="og:description" />
-    <style>.monospace { font-family: 'Inconsolata', monospace; }</style>
+    <style>.monospace { font-family: 'Inconsolata', monospace; } .emoji-list { background:white;max-height: 200px; }</style>
     <script src="//twemoji.maxcdn.com/2/twemoji.min.js?2.4"></script>
   </head>
   <body class="mw-100 pa3 f6 monospace">
@@ -30,10 +30,10 @@
       <br>
       <label class="dib"><input id="native" class="mb3 mt1 mr2 border-box pa2 br1 ba b--moon-gray" name="emoji" type="radio" checked>Native emoji</label>
       <label class="dib ml3"><input id="twemoji" class="mb3 mt1 mr2 border-box pa2 br1 ba b--moon-gray" name="emoji" type="radio">Twitter emoji</label>
+      <div id="emoji" hidden class="emoji-list absolute pa1 f3 tc z-1 br1 ba b--moon-gray overflow-auto"></div>
       <br>
-      <label class="dib">Background<input list="emoji" class="db mt1 w-100 border-box pa2 br1 ba b--moon-gray" name="bg" value="🌱" id="bg"></label>
-      <label class="dib">Paint<input list="emoji" class="db mt1 w-100 border-box pa2 br1 ba b--moon-gray" name="paint" value="🌹" id="paint"></label>
-      <datalist id="emoji"></datalist>
+      <label class="dib">Background<input class="db mt1 w-100 border-box pa2 br1 ba b--moon-gray" name="bg" value="🌱" id="bg"></label>
+      <label class="dib">Paint<input class="db mt1 w-100 border-box pa2 br1 ba b--moon-gray" name="paint" value="🌹" id="paint"></label>
       <div class="flex mt3">
         <button type="button" class="flex-auto mr3 tracked f7 dark-red bg-white grow pointer ba br1 ph3 pv2 f7 monospace" id="reset">Reset</button>
         <button type="button" class="flex-auto mr3 tracked f7 dark-blue bg-white grow pointer ba br1 ph3 pv2 f7 monospace" id="text">Get text</button>
